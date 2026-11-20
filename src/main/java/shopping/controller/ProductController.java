@@ -8,19 +8,22 @@ import shopping.dto.CreateProductRequest;
 import shopping.domain.Product;
 import shopping.PurgoMalumClient;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class ProductController {
-    List<Product> products = new ArrayList<>();
+    private final ConcurrentHashMap<Long, Product> products = new ConcurrentHashMap<>();
     private final AtomicLong nextProductId = new AtomicLong(1);
     private final PurgoMalumClient purgoMalumClient;
 
     @GetMapping("/api/products")
     public List<Product> getProducts() {
-        return products;
+        return products.values().stream()
+                .sorted(Comparator.comparing(Product::getProductId))
+                .toList();
     }
 
     @PostMapping("/api/products")
@@ -29,42 +32,43 @@ public class ProductController {
         long productId = nextProductId.getAndIncrement();
         purgoMalumClient.validate(request.getProductName());
         Product product = new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
-        products.add(product);
+        products.put(productId, product);
         return product;
     }
 
     @GetMapping("/api/products/{productId}")
     public Product getProduct(@PathVariable("productId") Long productId) {
-        return products.get(findProductIndex(productId));
+        Product product = products.get(productId);
+        if (product == null) {
+            throw productNotFound();
+        }
+        return product;
     }
 
     @PutMapping("/api/products/{productId}")
     public Product updateProduct(
             @PathVariable("productId") Long productId,
             @Valid @RequestBody CreateProductRequest request) {
-        int index = findProductIndex(productId);
+        getProduct(productId);
         purgoMalumClient.validate(request.getProductName());
-        Product updated = new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
-        products.set(index, updated);
+        Product updated = new Product(
+                request.getProductName(), productId, request.getPrice(), request.getImageUrl());
+        if (products.replace(productId, updated) == null) {
+            throw productNotFound();
+        }
         return updated;
     }
 
-    private int findProductIndex(Long productId) {
-        int index = 0;
-        for (Product product : products) {
-            if (product.getProductId().equals(productId)) {
-                return index;
-            }
-            index++;
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+    private ResponseStatusException productNotFound() {
+        return new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
     }
 
     @DeleteMapping("/api/products/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable("productId") Long productId) {
-        int index = findProductIndex(productId);
-        products.remove(index);
+        if (products.remove(productId) == null) {
+            throw productNotFound();
+        }
     }
 
     public ProductController(PurgoMalumClient purgoMalumClient) {
