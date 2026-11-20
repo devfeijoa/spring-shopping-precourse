@@ -38,6 +38,20 @@ public class MemberService {
         return issueToken(email);
     }
 
+    public String findEmailByAuthorization(String authorization) {
+        String prefix = "Bearer ";
+        if (authorization == null || !authorization.regionMatches(true, 0, prefix, 0, prefix.length())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 토큰이 필요합니다.");
+        }
+
+        String token = authorization.substring(prefix.length()).strip();
+        String email = emailsByToken.get(token);
+        if (email == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+        }
+        return email;
+    }
+
     private TokenResponse issueToken(String email) {
         String token = UUID.randomUUID().toString();
         emailsByToken.put(token, email);
