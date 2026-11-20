@@ -25,4 +25,14 @@ public class ProductController {
         products.add(product);
         return product;
     }
+
+    @GetMapping("/api/products/{productId}")
+    public Product getProduct(@PathVariable("productId") Long productId) {
+        for (Product product : products) {
+            if (product.getProductId().equals(productId)) {
+                return product;
+            }
+        }
+        return null;
+    }
 }
