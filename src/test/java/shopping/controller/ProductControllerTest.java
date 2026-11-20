@@ -91,7 +91,9 @@ class ProductControllerTest {
         MvcTestResult result = create(name);
         assertThat(result).hasStatus(HttpStatus.CREATED);
         byte[] body = result.getMvcResult().getResponse().getContentAsByteArray();
-        return json.readTree(body).required("productId").longValue();
+        long id = json.readTree(body).required("productId").longValue();
+        assertThat(result).bodyJson().isStrictlyEqualTo(productJson(id, name, 12000, "mug"));
+        return id;
     }
 
     private MvcTestResult create(String name) {
