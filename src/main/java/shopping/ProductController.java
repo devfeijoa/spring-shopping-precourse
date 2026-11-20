@@ -2,6 +2,7 @@ package shopping;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,6 @@ public class ProductController {
                 return product;
             }
         }
-        return null;
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
     }
 }
