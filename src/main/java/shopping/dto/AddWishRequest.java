@@ -1,4 +1,4 @@
-package shopping;
+package shopping.dto;
 
 import jakarta.validation.constraints.NotNull;
 

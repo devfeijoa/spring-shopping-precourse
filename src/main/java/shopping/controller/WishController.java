@@ -1,10 +1,13 @@
-package shopping;
+package shopping.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import shopping.dto.AddWishRequest;
+import shopping.service.MemberService;
+import shopping.domain.Wish;
 
 import java.util.List;
 import java.util.Map;

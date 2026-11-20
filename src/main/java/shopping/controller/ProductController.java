@@ -1,9 +1,12 @@
-package shopping;
+package shopping.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import shopping.dto.CreateProductRequest;
+import shopping.domain.Product;
+import shopping.PurgoMalumClient;
 
 import java.util.ArrayList;
 import java.util.List;

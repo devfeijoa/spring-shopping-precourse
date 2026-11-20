@@ -1,8 +1,11 @@
-package shopping;
+package shopping.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import shopping.dto.MemberRequest;
+import shopping.service.MemberService;
+import shopping.dto.TokenResponse;
 
 @RestController
 @RequestMapping("/api/members")
