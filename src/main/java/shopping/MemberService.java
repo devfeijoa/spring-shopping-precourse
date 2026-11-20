@@ -28,6 +28,16 @@ public class MemberService {
         return issueToken(email);
     }
 
+    public TokenResponse login(MemberRequest request) {
+        String email = request.email();
+        String passwordHash = passwordHashesByEmail.get(email);
+
+        if (passwordHash == null || !passwordEncoder.matches(request.password(), passwordHash)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+        return issueToken(email);
+    }
+
     private TokenResponse issueToken(String email) {
         String token = UUID.randomUUID().toString();
         emailsByToken.put(token, email);
