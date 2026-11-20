@@ -67,5 +67,4 @@ public class ProductController {
     public ProductController(PurgoMalumClient purgoMalumClient) {
         this.purgoMalumClient = purgoMalumClient;
     }
-
 }
