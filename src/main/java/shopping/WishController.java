@@ -46,4 +46,17 @@ public class WishController {
         }
         return wish;
     }
+
+    @DeleteMapping("/{wishId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteWish(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @PathVariable("wishId") long wishId) {
+        String email = memberService.findEmailByAuthorization(authorization);
+        Map<Long, Wish> wishes = wishesByEmail.get(email);
+
+        if (wishes == null || !wishes.values().removeIf(wish -> wish.wishId() == wishId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "위시리스트 항목을 찾을 수 없습니다.");
+        }
+    }
 }
