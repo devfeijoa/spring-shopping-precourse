@@ -53,4 +53,11 @@ public class ProductController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
     }
 
+    @DeleteMapping("/api/products/{productId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable("productId") Long productId) {
+        int index = findProductIndex(productId);
+        products.remove(index);
+    }
+
 }
