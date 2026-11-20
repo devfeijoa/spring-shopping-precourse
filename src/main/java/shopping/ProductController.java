@@ -1,5 +1,6 @@
 package shopping;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,7 +21,7 @@ public class ProductController {
 
     @PostMapping("/api/products")
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProducts(@RequestBody CreateProductRequest request) {
+    public Product createProducts(@Valid @RequestBody CreateProductRequest request) {
         long productId = nextProductId.getAndIncrement();
         Product product = new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
         products.add(product);
@@ -35,9 +36,9 @@ public class ProductController {
     @PutMapping("/api/products/{productId}")
     public Product updateProduct(
             @PathVariable("productId") Long productId,
-            @RequestBody CreateProductRequest request) {
+            @Valid @RequestBody CreateProductRequest request) {
         int index = findProductIndex(productId);
-        Product updated =  new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
+        Product updated = new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
         products.set(index, updated);
         return updated;
     }
