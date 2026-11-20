@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ProductController {
     List<Product> products = new ArrayList<>();
     private final AtomicLong nextProductId = new AtomicLong(1);
+    private final PurgoMalumClient purgoMalumClient;
 
     @GetMapping("/api/products")
     public List<Product> getProducts() {
@@ -23,6 +24,7 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public Product createProducts(@Valid @RequestBody CreateProductRequest request) {
         long productId = nextProductId.getAndIncrement();
+        purgoMalumClient.validate(request.getProductName());
         Product product = new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
         products.add(product);
         return product;
@@ -38,6 +40,7 @@ public class ProductController {
             @PathVariable("productId") Long productId,
             @Valid @RequestBody CreateProductRequest request) {
         int index = findProductIndex(productId);
+        purgoMalumClient.validate(request.getProductName());
         Product updated = new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
         products.set(index, updated);
         return updated;
@@ -59,6 +62,10 @@ public class ProductController {
     public void deleteProduct(@PathVariable("productId") Long productId) {
         int index = findProductIndex(productId);
         products.remove(index);
+    }
+
+    public ProductController(PurgoMalumClient purgoMalumClient) {
+        this.purgoMalumClient = purgoMalumClient;
     }
 
 }
