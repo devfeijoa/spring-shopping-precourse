@@ -1,9 +1,7 @@
 package shopping;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +16,13 @@ public class ProductController {
     public List<Product> getProducts() {
         return products;
     }
+
     @PostMapping("/api/products")
-    public List<Product> createProducts(@RequestBody CreateProductRequest request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product createProducts(@RequestBody CreateProductRequest request) {
         long productId = nextProductId.getAndIncrement();
         Product product = new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
         products.add(product);
-        return products;
+        return product;
     }
 }
