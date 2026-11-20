@@ -13,13 +13,18 @@ public class PurgoMalumClient {
     private final RestClient client;
 
     public PurgoMalumClient() {
+        this(defaultBuilder());
+    }
+
+    PurgoMalumClient(RestClient.Builder builder) {
+        this.client = builder.baseUrl("https://www.purgomalum.com").build();
+    }
+
+    private static RestClient.Builder defaultBuilder() {
         var factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(3000);
         factory.setReadTimeout(3000);
-        this.client = RestClient.builder()
-                .baseUrl("https://www.purgomalum.com")
-                .requestFactory(factory)
-                .build();
+        return RestClient.builder().requestFactory(factory);
     }
 
     public void validate(String name) {
