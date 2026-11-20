@@ -29,11 +29,28 @@ public class ProductController {
 
     @GetMapping("/api/products/{productId}")
     public Product getProduct(@PathVariable("productId") Long productId) {
+        return products.get(findProductIndex(productId));
+    }
+
+    @PutMapping("/api/products/{productId}")
+    public Product updateProduct(
+            @PathVariable("productId") Long productId,
+            @RequestBody CreateProductRequest request) {
+        int index = findProductIndex(productId);
+        Product updated =  new Product(request.getProductName(), productId, request.getPrice(), request.getImageUrl());
+        products.set(index, updated);
+        return updated;
+    }
+
+    private int findProductIndex(Long productId) {
+        int index = 0;
         for (Product product : products) {
             if (product.getProductId().equals(productId)) {
-                return product;
+                return index;
             }
+            index++;
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
     }
+
 }
